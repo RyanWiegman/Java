@@ -79,6 +79,7 @@ public class Server {
     }
 
     public static void main(String[] args) {
+        int port = 5000;
         int counter = 0;
         int debugger = 0;
         for(String s : args){
@@ -86,11 +87,13 @@ public class Server {
             counter++;
         }
 
-        if(args.length != 0)
+        if(args.length != 0){
             if(args[0].equals("DEBUG=1"))
                 debugger = 1;
+            if(args[0].equals("-p"))
+                port = Integer.parseInt(args[1]);
+        }
 
-
-        Server server = new Server(5000, debugger);
+        Server server = new Server(port, debugger);
     }
 }

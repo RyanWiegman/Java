@@ -17,6 +17,7 @@ public class Client {
 
     // NORMAL INPUT
     public Client(String host, int port, String filename) {
+        System.out.println(port);
         try {
             connection = new Socket(host, port);
             pw = new PrintWriter("output.txt");
@@ -120,9 +121,20 @@ public class Client {
     public static void main(String[] args) {
         Client client;
 
+        int counter = 0;
+        for(String s : args){
+            System.out.println(counter + ": " + s);
+            counter++;
+        }
+        System.out.println("args lengths:" + args.length);
+
         if(args.length == 1)
             client = new Client("127.0.0.1", 5000, args[0]);
-        if(args.length > 1)
-        client = new Client("127.0.0.1", 5000, args);
+        if(args.length > 1 && args[1].equals("-p")){
+            int port = Integer.parseInt(args[2]);
+            client = new Client("127.0.0.1", port, args[0]);
+        }
+        if(args.length > 1 && args[1].equals("-s"))
+            client = new Client("127.0.0.1", 5000, args);     
     }
 }
