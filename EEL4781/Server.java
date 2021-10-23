@@ -58,7 +58,10 @@ public class Server {
                             System.out.println("Finished sending " + filename + " to " + connection.getRemoteSocketAddress());
                     }
                 } catch (Exception ex) {
+                    String error = "File Not Found.";
+
                     System.out.println("Error: " + ex);
+                    socketOut.writeChars(error);
                 } finally {
                     // Clean up socket and file streams
                     if (connection != null) {

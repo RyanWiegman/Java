@@ -12,7 +12,7 @@ public class Client {
     private int bytes;
     private byte[] buffer = new byte[BUFFER_SIZE];
     PrintWriter pw;
-    String buffer_string;
+    String buffer_string, buffer_length;
     StringBuffer sb = new StringBuffer();
 
     // NORMAL INPUT
@@ -30,18 +30,18 @@ public class Client {
             while (true) {
                 bytes = socketIn.read(buffer, 0, BUFFER_SIZE); // Read from socket
                 if (bytes <= 0) break; // Check for end of file
+                System.out.println(bytes);
 
                 for(byte b : buffer){
                     if(b == '\n'){
                         buffer_string = sb.toString();
-                        System.out.println("breaking.");
                         break;
                     }
                     sb.append((char)b);
                 }
 
                 System.out.print(new String(buffer, StandardCharsets.UTF_8)); // Write to standard output
-                System.out.println(buffer_string);
+                System.out.println("buffer_string: " + buffer_string);
                 pw.println(buffer_string);
             }
 
@@ -52,6 +52,20 @@ public class Client {
         }
     }
 
+    public int byteLength(byte[] buffer) {
+        sb.delete(0, buffer.length);
+
+        for(byte b : buffer){
+            if(b == '\n'){
+                buffer_length = sb.toString();
+                break;
+            }
+            sb.append((char)b);
+        }
+
+        return buffer_length.length();
+    }
+
     // SPECIFIC BYTE INPUT.
     public Client(String host, int port, String[] args) {
         int count = 0;
@@ -59,8 +73,6 @@ public class Client {
             System.out.println(count + " " + s);
             count++;
         }
-        //byte[] start_byte = args[2].getBytes();
-        //byte[] end_byte = args[4].getBytes();
         int start_byte = Integer.parseInt(args[2]);
         int end_byte = Integer.parseInt(args[4]);
 
@@ -78,20 +90,8 @@ public class Client {
                 bytes = socketIn.read(buffer, 0, BUFFER_SIZE); // Read from socket
                 if (bytes <= 0) break; // Check for end of file
 
-                count = 0;
+                System.out.println("bytes: " + bytes + " buffer: " + buffer);
                 System.out.println("start: " + start_byte + " end_byte: " + end_byte);
-                /*for(byte b : buffer){
-                    System.out.println(count + " " + b);
-                    count++;
-
-                    if(b == '\n'){
-                        buffer_string = sb.toString();
-                        break;
-                    }
-                    if(b >= start_byte && b <= end_byte)
-                        System.out.println("we in it.");
-                        sb.append((char)b);
-                }*/
                 
                 for(int index = start_byte; index <= end_byte; index++){
                     System.out.println("index: " + index);
@@ -99,8 +99,14 @@ public class Client {
                 }
                 buffer_string = sb.toString();
 
+                System.out.println("buffer_string_length: " + byteLength(buffer));
+                if(end_byte < start_byte || start_byte < 1 || end_byte > byteLength(buffer)){
+                    System.out.println("Invalid bytes entered.");
+                    break;
+                }
+
                 System.out.print(new String(buffer, StandardCharsets.UTF_8)); // Write to standard output
-                System.out.println("buffer_sting: " + buffer_string);
+                System.out.println("buffer_string: " + buffer_string);
                 pw.println(buffer_string);
             }
 
