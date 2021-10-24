@@ -3,6 +3,9 @@ import java.io.DataOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
+import javax.lang.model.util.ElementScanner6;
 
 public class Client {
     private final int BUFFER_SIZE = 4096;
@@ -17,7 +20,7 @@ public class Client {
 
     // NORMAL INPUT
     public Client(String host, int port, String filename) {
-        System.out.println(port);
+        System.out.println("port#: " + port);
         try {
             connection = new Socket(host, port);
             pw = new PrintWriter("output.txt");
@@ -120,21 +123,40 @@ public class Client {
 
     public static void main(String[] args) {
         Client client;
+        Scanner scan = new Scanner(System.in);
 
-        int counter = 0;
-        for(String s : args){
-            System.out.println(counter + ": " + s);
-            counter++;
-        }
-        System.out.println("args lengths:" + args.length);
+        while(true) {
+            String arguments = scan.nextLine();
+            System.out.println("args: " + arguments);
+            args = arguments.split(" ");
 
-        if(args.length == 1)
-            client = new Client("127.0.0.1", 5000, args[0]);
-        if(args.length > 1 && args[1].equals("-p")){
-            int port = Integer.parseInt(args[2]);
-            client = new Client("127.0.0.1", port, args[0]);
+            if(args[0].equals("close")){
+                scan.close();
+                break;
+            }
+
+            int counter = 0;
+            for(String s : args){
+                System.out.println(counter + ": " + s);
+                counter++;
+            }
+            System.out.println("args lengths:" + args.length);
+    
+            if(args.length == 1 && !(args[0].equals("help")))
+                client = new Client("127.0.0.1", 5000, args[0]);
+            if(args.length > 1 && args[1].equals("-p")){
+                int port = Integer.parseInt(args[2]);
+                client = new Client("127.0.0.1", port, args[0]);
+            }
+            if(args.length > 1 && args[1].equals("-s"))
+                client = new Client("127.0.0.1", 5000, args);
+            if(args.length != 0 && args[0].equals("help")){
+                System.out.println("TO READ FILE: test.txt");
+                System.out.println("READ BYTE RANGE FROM FILE: server-name test.txt -s start-byte -e end-byte.");
+                System.out.println("CHANGE PORT: -p new-port");
+            }
+            else
+                System.out.println("ENTER 'help' FOR ACCEPTABLE COMMANDS");
         }
-        if(args.length > 1 && args[1].equals("-s"))
-            client = new Client("127.0.0.1", 5000, args);     
     }
 }

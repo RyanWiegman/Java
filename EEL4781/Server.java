@@ -90,8 +90,6 @@ public class Server {
         if(args.length != 0){
             if(args[0].equals("DEBUG=1"))
                 debugger = 1;
-            if(args[0].equals("-p"))
-                port = Integer.parseInt(args[1]);
         }
 
         Server server = new Server(port, debugger);
