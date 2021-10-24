@@ -26,7 +26,7 @@ public class Server {
         try {
             File new_file = new File(filename);
             if(new_file.createNewFile()){
-                System.out.println(filename + "c reated.");
+                System.out.println(filename + " created.");
                 flag = true;
             }
             else{
@@ -118,12 +118,7 @@ public class Server {
 
     public static void main(String[] args) {
         int port = 5000;
-        int counter = 0;
         int debugger = 0;
-        for(String s : args){
-            System.out.println(counter + ": " + s);
-            counter++;
-        }
 
         if(args.length != 0){
             if(args[0].equals("DEBUG=1"))
