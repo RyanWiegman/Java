@@ -1,7 +1,9 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,13 +14,34 @@ public class Server {
     private DataInputStream socketIn;
     private DataOutputStream socketOut;
     private FileInputStream fileIn;
-    private String filename;
+    private String filename, add_to_file;
     private int bytes;
     private byte[] buffer = new byte[BUFFER_SIZE];
+    StringBuffer file_sb = new StringBuffer();
+    PrintWriter pw;
+    boolean flag = false;
+
+    // CHECK FILE EXISTENCE.
+    public void check_file_exist(){
+        try {
+            File new_file = new File(filename);
+            if(new_file.createNewFile()){
+                System.out.println(filename + "c reated.");
+                flag = true;
+            }
+            else{
+                System.out.println(filename + " already exsists.");
+                flag = false;
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e);
+        }                 
+    }
 
     public Server(int port, int debugger) {
         try {
             socket = new ServerSocket(port);
+
             // Wait for connection and process it
             while (true) {
                 try {
@@ -28,6 +51,7 @@ public class Server {
                     socketOut = new DataOutputStream(connection.getOutputStream()); // Write data to client
 
                     filename = socketIn.readUTF(); // Read filename from client
+                    check_file_exist();
                     fileIn = new FileInputStream(filename);
 
                     // Write file contents to client
@@ -35,6 +59,20 @@ public class Server {
                         bytes = fileIn.read(buffer, 0, BUFFER_SIZE); // Read from file
                         if (bytes <= 0){ // Check for end of file
                             break;
+                        }
+
+                        // WRITE FILE TO SERVER
+                        if(flag){
+                            pw = new PrintWriter(filename);
+
+                            for(byte b : buffer){
+                                if(b == '\n'){
+                                    add_to_file = file_sb.toString();
+                                    break;
+                                }
+                                file_sb.append((char)b);
+                            }
+                            pw.println(add_to_file);
                         }
 
                         // PRINT DEBUGGER MSG
